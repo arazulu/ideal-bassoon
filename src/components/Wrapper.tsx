@@ -1,16 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, ReactHTMLElement } from "react";
 import UserBoard from "./UserBoard";
 
+type User = {
+  user: string;
+  cards: string[];
+};
+
 const Wrapper = () => {
-  let saved = sessionStorage.getItem("savedState");
-  saved = JSON.parse(saved);
-  if (saved === null) {
-    saved = [];
-  }
+  let saved: Array<User> | [];
+  sessionStorage.getItem("savedState") === null
+    ? (saved = [])
+    : (saved = JSON.parse(sessionStorage.getItem("savedState")!));
+
   const [getUsers, setUsers] = useState(saved);
   const [newUser, addUser] = useState("");
 
-  const addUserHandler = (e) => {
+  const addUserHandler = (e: Event) => {
     e.preventDefault();
     if (newUser === "") return;
     for (let x of getUsers) {
@@ -19,12 +24,13 @@ const Wrapper = () => {
     let users = { user: newUser, cards: [] };
 
     setUsers((prevState) => [...prevState, users]);
-    document.getElementById("form").reset();
+    let form = document.getElementById("form") as HTMLFormElement;
+    form.reset();
   };
 
-  const addCard = (e) => {
+  const addCard = (e: React.FormEvent<HTMLFormElement>) => {
     let response = window.prompt("please add some text");
-    let userIndex = e.target.name;
+    let userIndex = (e.target as HTMLInputElement).name;
     if (response === null) return;
 
     setUsers((prevState) => {
@@ -35,7 +41,11 @@ const Wrapper = () => {
     });
   };
 
-  const moveCard = (cardIndex, userIndex, direction) => {
+  const moveCard = (
+    cardIndex: number,
+    userIndex: number,
+    direction: number
+  ) => {
     let targetIndex = userIndex + direction;
     if (targetIndex < 0 || targetIndex >= getUsers.length) return;
 
@@ -47,18 +57,20 @@ const Wrapper = () => {
     });
   };
 
-  const allUsers = getUsers.map((curr, i) => {
-    return (
-      <UserBoard
-        key={`user ${i}`}
-        name={curr.user}
-        cards={curr.cards}
-        userIndex={i}
-        addCard={addCard}
-        moveCard={moveCard}
-      />
-    );
-  });
+  const allUsers: JSX.Element[] = [...getUsers].map(
+    (curr: { user: string; cards: string[] }, i: number) => {
+      return (
+        <UserBoard
+          key={`user ${i}`}
+          name={curr.user}
+          cards={curr.cards}
+          userIndex={i}
+          addCard={addCard}
+          moveCard={moveCard}
+        />
+      );
+    }
+  );
 
   useEffect(() => {
     sessionStorage.setItem("savedState", JSON.stringify(getUsers));
