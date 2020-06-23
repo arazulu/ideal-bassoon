@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ReactHTMLElement } from "react";
+import React, { useState, useEffect } from "react";
 import UserBoard from "./UserBoard";
 
 type User = {
@@ -6,7 +6,7 @@ type User = {
   cards: string[];
 };
 
-const Wrapper = () => {
+const Wrapper: React.FC = () => {
   let saved: Array<User> | [];
   sessionStorage.getItem("savedState") === null
     ? (saved = [])
@@ -15,7 +15,7 @@ const Wrapper = () => {
   const [getUsers, setUsers] = useState(saved);
   const [newUser, addUser] = useState("");
 
-  const addUserHandler = (e: Event) => {
+  const addUserHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (newUser === "") return;
     for (let x of getUsers) {
@@ -28,9 +28,10 @@ const Wrapper = () => {
     form.reset();
   };
 
-  const addCard = (e: React.FormEvent<HTMLFormElement>) => {
+  // React.FormEvent<HTMLFormElement>
+  const addCard = (e: React.MouseEvent<Element, MouseEvent>) => {
     let response = window.prompt("please add some text");
-    let userIndex = (e.target as HTMLInputElement).name;
+    let userIndex = (e.target as HTMLInputElement).value;
     if (response === null) return;
 
     setUsers((prevState) => {

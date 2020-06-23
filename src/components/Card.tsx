@@ -1,8 +1,13 @@
 import React from "react";
 
-const Card = (props) => {
-  const { card, cardIndex, userIndex, moveCard } = props;
+type MyProps = {
+  card: string;
+  cardIndex: number;
+  userIndex: number;
+  moveCard: (cardIndex: number, userIndex: number, direction: number) => void;
+};
 
+const Card: React.FC<MyProps> = ({ card, cardIndex, userIndex, moveCard }) => {
   return (
     <div className="card">
       <button
